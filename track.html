@@ -10,7 +10,6 @@
 		#container{height:100%;margin: 20px;}  
 	</style>  
 	<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=YWdGplhYjUGQ3GtpKNeuTM2S"></script>
-
 </head>  
 
 <body>  
@@ -18,7 +17,28 @@
 	<script type="text/javascript"> 
 		// 实时轨迹demo。
 		// 实际运用的话可能ajax实时读取后台数据，加载到地图上。
-
+		var longitude = 999.0;
+		var lantitude = 999.0;
+		function loadData(){
+		var xmlhttp;
+		if(window.XMLHttpRequest){
+			xmlhttp = new XMLHttpRequest();
+		}
+		else{
+			xmlhttp = new ActiveXObject('microsoft.XMLHTTP');
+		}
+		xmlhttp.onreadystatechange = function(){
+			if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+					//document.write(xmlhttp.responseText);
+				var obj = JSON.parse(xmlhttp.responseText);
+				longitude = obj.jingdu;
+				lantitude = obj.weidu;			
+			}
+						
+		}
+		xmlhttp.open("GET","/GPSdata",true);
+		xmlhttp.send();
+		}
 
 		// 获取随机数
 		function getRandom(n){
@@ -57,14 +77,15 @@
 
 			polyline = new BMap.Polyline(linePoints, {strokeColor:"red", strokeWeight:2, strokeOpacity:0.5});   //创建折线
 			map.addOverlay(polyline);   //增加折线
-		}
+		}		
 
-		//随机生成新的点，加入到轨迹中。
 		function dynamicLine(){
-			var lng = 100+getRandom(40);
-			var lat = 35+getRandom(30);
-			var id = getRandom(1000);
-			var point = {"lng":lng,"lat":lat,"status":1,"id":id}
+			loadData();
+			if (lantitude == 999.0 && longitude == 999.0){
+				setTimeout(dynamicLine, 1000);
+				return;
+			}
+			var point = {"lng":longitude,"lat":lantitude}
 			var makerPoints = [];
 			var newLinePoints = [];
 			var len;
@@ -72,13 +93,13 @@
 			makerPoints.push(point);			
 			addMarker(makerPoints);//增加对应该的轨迹点
 			points.push(point);
-			bPoints.push(new BMap.Point(lng,lat));
+			bPoints.push(new BMap.Point(longitude,lantitude));
 			len = points.length;
 			newLinePoints = points.slice(len-2, len);//最后两个点用来画线。
 
 			addLine(newLinePoints);//增加轨迹线
 			setZoom(bPoints);
-			setTimeout(dynamicLine, 1000);
+			setTimeout(dynamicLine, 2000);
 		}
 
 		//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
@@ -91,9 +112,8 @@
 				map.centerAndZoom(centerPoint,mapZoom);
 				map.oldView = JSON.stringify(view);
 			}
-
 		}
-
+		
 		//数据准备,
 		var points = [];//原始点信息数组
 		var bPoints = [];//百度化坐标数组。用于更新显示范围。
@@ -101,12 +121,13 @@
 		//地图操作开始
 		var map = new BMap.Map("container");  
 
-		map.centerAndZoom(new BMap.Point(103.388611,35.563611), 5); //初始显示中国。
+		map.centerAndZoom(new BMap.Point(117.25 ,31.83), 13); //初始显示hefei。
 
 		map.enableScrollWheelZoom();//滚轮放大缩小
 
 		setTimeout(dynamicLine, 1000);//动态生成新的点。
 
 	</script>  
+
 </body>  
 </html>
