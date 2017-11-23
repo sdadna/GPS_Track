@@ -23,9 +23,13 @@ int client(){
 		return 1;
 	}
 
-	char ch[] = "1235";
-	ret  = write(client_sock, ch, strlen(ch) + 1);
-	printf("%d %s\n",ret, ch);
+	//char ch[] = "3";
+	float lantitude = 3150.42774;
+	float longtitude = 11715.11010;
+
+	ret  = write(client_sock, &lantitude, sizeof(float));
+	ret  = write(client_sock, &longtitude, sizeof(float));
+	printf("%d %f %f\n",ret, lantitude, longtitude);
 	close(client_sock);
 }
 

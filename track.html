@@ -31,8 +31,11 @@
 			if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 					//document.write(xmlhttp.responseText);
 				var obj = JSON.parse(xmlhttp.responseText);
-				longitude = obj.jingdu;
-				lantitude = obj.weidu;			
+				if ((obj.jingdu >= -180 && obj.jingdu <= 180) && (obj.weidu >= -90 && obj.weidu <= 90)) {
+					longitude = obj.jingdu;
+					lantitude = obj.weidu;	
+				}
+						
 			}
 						
 		}

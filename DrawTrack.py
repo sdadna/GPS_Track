@@ -39,10 +39,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
 		elif self.path == '/GPSdata':
 		#	data = {'jingdu':12,'weidu':35} #dict 
 			global i		
-			if(len(data))
-				json_str = json.dumps(data[i])
-				i = (i + 1) % 4
+			
+			json_str = json.dumps(data[i])
+			i = (i + 1) % 4
 			print "json:",json_str
+
 
 			self.send_response(200)
 			self.send_header('Content-type', 'text/html')
@@ -54,12 +55,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
 class localHostServer(SocketServer.BaseRequestHandler):
 
 		def handle(self):
-			data = {}
+			
 			conn = self.request
 			ret_bytes = conn.recv(1024)
-			data["jingdu"] = 110
-			data["weidu"] = 34
-			print ret_str
+			print ret_bytes
+			# data["jingdu"] = 110
+			# data["weidu"] = 34
+			
 
 def start_server(port):
 	http_server = HTTPServer(('', int(port)), HTTPHandler)
