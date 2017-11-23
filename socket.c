@@ -24,12 +24,25 @@ int client(){
 	}
 
 	//char ch[] = "3";
-	float lantitude = 3150.42774;
-	float longtitude = 11715.11010;
+	struct GPS
+	{
+		char lantitude[12];
+		char longtitude[12];
+	};
+	 struct GPS GPS_Point;
+	// GPS_Point = (struct GPS *)malloc(sizeof(struct GPS));
+	// if(!GPS_Point){
+	// 	perror("malloc error");
+	// 	return -1;
+	// }
+	strncpy(GPS_Point.lantitude, "#11715.11010#", 14);
+	strncpy(GPS_Point.longtitude, "#3150.42774#", 13);
+	// char lantitude[] = "3150.42774 ";
+	// char longtitude[] = "11715.11010";
 
-	ret  = write(client_sock, &lantitude, sizeof(float));
-	ret  = write(client_sock, &longtitude, sizeof(float));
-	printf("%d %f %f\n",ret, lantitude, longtitude);
+	ret  = write(client_sock, &GPS_Point, sizeof(GPS_Point));
+//	ret  = write(client_sock, longtitude, strlen(longtitude) + 1);
+	printf("%d %f %f\n",ret, GPS_Point.lantitude, GPS_Point.longtitude);
 	close(client_sock);
 }
 
