@@ -26,8 +26,8 @@ int client(){
 	//char ch[] = "3";
 	struct GPS
 	{
-		char lantitude[12];
-		char longtitude[12];
+		char lantitude[13];
+		char longtitude[13];
 	};
 	 struct GPS GPS_Point;
 	// GPS_Point = (struct GPS *)malloc(sizeof(struct GPS));
@@ -35,7 +35,7 @@ int client(){
 	// 	perror("malloc error");
 	// 	return -1;
 	// }
-	strncpy(GPS_Point.lantitude, "#11715.11010#", 14);
+	strncpy(GPS_Point.lantitude, "#11715.11010#", 13);
 	strncpy(GPS_Point.longtitude, "#3150.42774#", 13);
 	// char lantitude[] = "3150.42774 ";
 	// char longtitude[] = "11715.11010";

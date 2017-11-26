@@ -46,7 +46,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
 				data.clear()
 			else:
 				json_str = json.dumps(Error_data)
-				#i = (i + 1) % 4
+			# json_str = json.dumps(data[i])
+			# i = (i + 1) % 4
 			print "json:",json_str
 
 			self.send_response(200)
@@ -63,9 +64,8 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		Lon_min_decimal,Lon_deg_int = math.modf(float(LatLong[2]))
 		Lat_int = int(Lat_deg_int / 100)
 		Lon_int = int(Lon_deg_int / 100)
-		Lat_decimal = Lat_deg_int % 100 / 60.0 + Lat_min_decimal / 3600.0
-		Lon_decimal = Lon_deg_int % 100 / 60.0 + Lon_min_decimal / 3600.0
-		
+		Lat_decimal = (Lat_deg_int % 100 + Lat_min_decimal)/ 60.0
+		Lon_decimal = (Lon_deg_int % 100 + Lon_min_decimal)/ 60.0
 		Lat = Lat_int + Lat_decimal		
 		Lon = Lon_int + Lon_decimal
 		return Lat,Lon

@@ -1,135 +1,146 @@
-<!DOCTYPE html>  
-<html>  
-<head>  
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
-	<title>Hello, World</title>  
-	<style type="text/css">  
-		html{height:100%}  
-		body{height:100%;margin:0px;padding:0px}  
-		#container{height:100%;margin: 20px;}  
-	</style>  
-	<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=YWdGplhYjUGQ3GtpKNeuTM2S"></script>
-</head>  
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=YWdGplhYjUGQ3GtpKNeuTM2S"></script>
+    <title>trace gps</title>
+</head>
 
 <body>  
-	<div id="container"></div> 
-	<script type="text/javascript"> 
-		// 实时轨迹demo。
-		// 实际运用的话可能ajax实时读取后台数据，加载到地图上。
-		var longitude = 999.0;
-		var lantitude = 999.0;
-		function loadData(){
-		var xmlhttp;
-		if(window.XMLHttpRequest){
-			xmlhttp = new XMLHttpRequest();
-		}
-		else{
-			xmlhttp = new ActiveXObject('microsoft.XMLHTTP');
-		}
-		xmlhttp.onreadystatechange = function(){
-			if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-					//document.write(xmlhttp.responseText);
-				var obj = JSON.parse(xmlhttp.responseText);
-				if ((obj.jingdu >= -180 && obj.jingdu <= 180) && (obj.weidu >= -90 && obj.weidu <= 90)) {
-					longitude = obj.jingdu;
-					lantitude = obj.weidu;	
-				}						
-			}
-						
-		}
-		xmlhttp.open("GET","/GPSdata",true);
-		xmlhttp.send();
-		}
+	<div id="allmap"></div> 
 
-		// 获取随机数
-		function getRandom(n){
-			return Math.floor(Math.random()*n+1)
+</body>  
+</html>
+<script type="text/javascript"> 
+	// 实时轨迹demo。
+	// 实际运用的话可能ajax实时读取后台数据，加载到地图上。
+	var longitude = 999.0;
+	var lantitude = 999.0;
+	// var longitude = 120.770102;
+	// var lantitude = 31.295107;
+	// var longitude = 117.251835;
+	// var lantitude = 31.840662350;
+	function loadData(){
+	var xmlhttp;
+	if(window.XMLHttpRequest){
+		xmlhttp = new XMLHttpRequest();
+	}
+	else{
+		xmlhttp = new ActiveXObject('microsoft.XMLHTTP');
+	}
+	xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+				//document.write(xmlhttp.responseText);
+			var obj = JSON.parse(xmlhttp.responseText);
+			if ((obj.jingdu >= -180 && obj.jingdu <= 180) && (obj.weidu >= -90 && obj.weidu <= 90)) {
+				longitude = obj.jingdu;
+				lantitude = obj.weidu;	
+			}						
 		}
+					
+	}
+	xmlhttp.open("GET","/GPSdata",true);
+	xmlhttp.send();
+	}
 
-		//在轨迹点上创建图标，并添加点击事件，显示轨迹点信息。points,数组。
-		function addMarker(points){
-			var pointsLen = points.length;
-			if(pointsLen == 0){
-				return;
-			}
+	//在轨迹点上创建图标，并添加点击事件，显示轨迹点信息。points,数组。
+	drawLinecallback = function (data){
+		// var pointsLen = points.length;
+		// if(pointsLen == 0){
+		// 	return;
+		// }
+		if(data.status === 0){
 			var myIcon = new BMap.Icon("track.ico", new BMap.Size(5, 5), {
-				offset: new BMap.Size(5, 5) 
-			});
+			offset: new BMap.Size(5, 5) 
+		});
 
-			// 创建标注对象并添加到地图   
-			for(var i = 0;i <pointsLen;i++){
-				var point = new BMap.Point(points[i].lng,points[i].lat);
-				var marker = new BMap.Marker(point, {icon: myIcon});
-				map.addOverlay(marker); 
-			}
-		}    
-
-		//添加线
-		function addLine(points){
-
-			var linePoints = [],pointsLen = points.length,i,polyline;
-			if(pointsLen == 0){
-				return;
-			}
-			// 创建标注对象并添加到地图   
-			for(i = 0;i <pointsLen;i++){
-				linePoints.push(new BMap.Point(points[i].lng,points[i].lat));
-			}
-
-			polyline = new BMap.Polyline(linePoints, {strokeColor:"red", strokeWeight:2, strokeOpacity:0.5});   //创建折线
-			map.addOverlay(polyline);   //增加折线
-		}		
-
-		function dynamicLine(){
-			loadData();
-			if (lantitude == 999.0 && longitude == 999.0){
-				setTimeout(dynamicLine, 1000);
-				return;
-			}
-			var point = {"lng":longitude,"lat":lantitude}
-			var makerPoints = [];
+		// 创建标注对象并添加到地图   
+		//for(var i = 0;i <pointsLen;i++){
+			// var point = new BMap.Point(points[i].lng,points[i].lat);
+			var marker = new BMap.Marker(data.points[0], {icon: myIcon});
+			map.addOverlay(marker); 
+			
+		//draw line
 			var newLinePoints = [];
 			var len;
-
-			makerPoints.push(point);			
-			addMarker(makerPoints);//增加对应该的轨迹点
-			points.push(point);
-			bPoints.push(new BMap.Point(longitude,lantitude));
+			points.push(data.points[0]);
+			bPoints.push(data.points[0]);
 			len = points.length;
 			newLinePoints = points.slice(len-2, len);//最后两个点用来画线。
 
 			addLine(newLinePoints);//增加轨迹线
 			setZoom(bPoints);
-			setTimeout(dynamicLine, 2000);
+		//}
 		}
 
-		//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
-		//更新。设置不是每次增加点都重新设置显示范围。因为有可能会想放大了看。
-		function setZoom(bPoints){
-			var view = map.getViewport(eval(bPoints));
-			if(map.oldView != JSON.stringify(view)){
-				var mapZoom = view.zoom; 
-				var centerPoint = view.center; 
-				map.centerAndZoom(centerPoint,mapZoom);
-				map.oldView = JSON.stringify(view);
-			}
+	}    
+
+	//添加线
+	function addLine(points){
+
+		var linePoints = [],pointsLen = points.length,i,polyline;
+		if(pointsLen == 0){
+			return;
+		}
+		// 创建标注对象并添加到地图   
+		for(i = 0;i <pointsLen;i++){
+			linePoints.push(new BMap.Point(points[i].lng,points[i].lat));
+		}
+
+		polyline = new BMap.Polyline(linePoints, {strokeColor:"red", strokeWeight:2, strokeOpacity:0.5});   //创建折线
+		map.addOverlay(polyline);   //增加折线
+	}		
+
+
+	function dynamicLine(){
+		loadData();
+		if (lantitude == 999.0 && longitude == 999.0){
+			setTimeout(dynamicLine, 5000);
+			return;
 		}
 		
-		//数据准备,
-		var points = [];//原始点信息数组
-		var bPoints = [];//百度化坐标数组。用于更新显示范围。
+		var point = {"lng":longitude,"lat":lantitude};
+		longitude = 999;
+		lantitude = 999;
+		var makerPoints = [];
+		//var newLinePoints = [];
+		var len;
 
-		//地图操作开始
-		var map = new BMap.Map("container");  
+		makerPoints.push(point);
+		var convertor = new BMap.Convertor();			
+		convertor.translate(makerPoints, 1, 5, drawLinecallback);
+		//addMarker(makerPoints);//增加对应该的轨迹点
 
-		map.centerAndZoom(new BMap.Point(117.25 ,31.83), 13); //初始显示hefei。
+		setTimeout(dynamicLine, 2000);
+	}
 
-		map.enableScrollWheelZoom();//滚轮放大缩小
+	//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
+	//更新。设置不是每次增加点都重新设置显示范围。因为有可能会想放大了看。
+	function setZoom(bPoints){
+		var view = map.getViewport(eval(bPoints));
+		if(map.oldView != JSON.stringify(view)){
+			var mapZoom = view.zoom; 
+			var centerPoint = view.center; 
+			map.centerAndZoom(centerPoint,mapZoom);
+			map.oldView = JSON.stringify(view);
+		}
+	}
+	
+	//数据准备,
+	var points = [];//原始点信息数组
+	var bPoints = [];//百度化坐标数组。用于更新显示范围。
 
-		setTimeout(dynamicLine, 1000);//动态生成新的点。
+	//地图操作开始
+	var map = new BMap.Map("allmap");  //contina not ok
 
-	</script>  
+	map.centerAndZoom(new BMap.Point(117.25 ,31.83), 13); //初始显示hefei。
+	map.addControl(new BMap.NavigationControl());
+	map.enableScrollWheelZoom();//滚轮放大缩小
 
-</body>  
-</html>
+	setTimeout(dynamicLine, 1000);//动态生成新的点。
+
+</script>  
