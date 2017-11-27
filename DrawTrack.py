@@ -11,7 +11,8 @@ import math
 
 i = 0;
 #data = [{'jingdu':117.27,'weidu':31.86},{'jingdu':117.16,'weidu':32.47},{'jingdu':116.98,'weidu':32.62},{'jingdu':118.38,'weidu':31.33}]
-data = {}
+gps_data = {}
+BaiDuMapData = {}
 class HTTPHandler(BaseHTTPRequestHandler):
 
 	# def do_GET(self):
@@ -38,12 +39,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
 			self.wfile.write(f.read())
 			f.close()
 		elif self.path == '/GPSdata':
-		#	data = {'jingdu':12,'weidu':35} #dict 
-			global i		
-			Error_data = {'jingdu':999,'weidu':999}
-			if len(data):
-				json_str = json.dumps(data)
-				data.clear()
+			global i
+			Error_data = {'Lat':999,'Lon':999}
+			if len(BaiDuMapData):
+				json_str = json.dumps(BaiDuMapData)
+				BaiDuMapData.clear()
 			else:
 				json_str = json.dumps(Error_data)
 			# json_str = json.dumps(data[i])
@@ -59,35 +59,66 @@ class HTTPHandler(BaseHTTPRequestHandler):
 
 class localHostServer(SocketServer.BaseRequestHandler):
 
-	def parseLatLong(self,LatLong):
-		Lat_min_decimal,Lat_deg_int = math.modf(float(LatLong[1]))
-		Lon_min_decimal,Lon_deg_int = math.modf(float(LatLong[2]))
-		Lat_int = int(Lat_deg_int / 100)
+	def parseLon(self, lon):
+		
+		Lon_min_decimal,Lon_deg_int = math.modf(float(lon))
+		
 		Lon_int = int(Lon_deg_int / 100)
-		Lat_decimal = (Lat_deg_int % 100 + Lat_min_decimal)/ 60.0
+		
 		Lon_decimal = (Lon_deg_int % 100 + Lon_min_decimal)/ 60.0
-		Lat = Lat_int + Lat_decimal		
+				
 		Lon = Lon_int + Lon_decimal
-		return Lat,Lon
 
+		return Lon
+
+	def parseLatitude(self, lat):
+		Lat_min_decimal,Lat_deg_int = math.modf(float(lat))
+		Lat_int = int(Lat_deg_int / 100)
+		Lat_decimal = (Lat_deg_int % 100 + Lat_min_decimal)/ 60.0
+		Lat = Lat_int + Lat_decimal
+		return Lat
+
+	def parseGPSData(self, data):
+		Lat = self.parseLatitude(data['Lat'])
+		Lon = self.parseLon(gps_data['Lon'])
+
+		if data['Lon_EW'] == 'W':
+			Lon = -Lon
+		if data['Lat_NS'] == 'S':
+			Lat = -Lat
+
+		return Lat, Lon
 
 	def handle(self):
 		
 		conn = self.request
 		ret_bytes = conn.recv(1024)
 		print ret_bytes
-		ret = ret_bytes.split('#')
+		ret_bytes = ret_bytes.replace('\t','')
+		ret = ret_bytes.split('\n')
 		print ret
-		Lat, Lon = self.parseLatLong(ret)
-		data['jingdu'] = Lat
-		data['weidu'] = Lon
+		for string in ret:
+			print string
+			data = string.split(':')
+			if(len(data) < 2):
+				break
+			gps_data[data[0]] = data[1]
+
+		print gps_data
+		#Lat		
+		Lat, Lon = self.parseGPSData(gps_data)
+		print Lat, Lon
+		BaiDuMapData['Lat'] = Lat
+		BaiDuMapData['Lon'] = Lon
+		# data['jingdu'] = Lat
+		# data['weidu'] = Lon
 		#print ret[1], ret[2]
 		# data["jingdu"] = 110
 		# data["weidu"] = 34
 			
 
 def start_server(port):
-	http_server = HTTPServer(('', int(port)), HTTPHandler)
+	http_server = HTTPServer(('127.0.0.1', int(port)), HTTPHandler)
 	http_server.serve_forever()
 
 

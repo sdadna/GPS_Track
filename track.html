@@ -36,9 +36,9 @@
 		if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 				//document.write(xmlhttp.responseText);
 			var obj = JSON.parse(xmlhttp.responseText);
-			if ((obj.jingdu >= -180 && obj.jingdu <= 180) && (obj.weidu >= -90 && obj.weidu <= 90)) {
-				longitude = obj.jingdu;
-				lantitude = obj.weidu;	
+			if ((obj.Lat >= -90 && obj.Lat <= 90) && (obj.Lon >= -180 && obj.Lon <= 180)) {
+				longitude = obj.Lon;
+				lantitude = obj.Lat;
 			}						
 		}
 					
@@ -49,18 +49,13 @@
 
 	//在轨迹点上创建图标，并添加点击事件，显示轨迹点信息。points,数组。
 	drawLinecallback = function (data){
-		// var pointsLen = points.length;
-		// if(pointsLen == 0){
-		// 	return;
-		// }
+
 		if(data.status === 0){
 			var myIcon = new BMap.Icon("track.ico", new BMap.Size(5, 5), {
 			offset: new BMap.Size(5, 5) 
 		});
 
 		// 创建标注对象并添加到地图   
-		//for(var i = 0;i <pointsLen;i++){
-			// var point = new BMap.Point(points[i].lng,points[i].lat);
 			var marker = new BMap.Marker(data.points[0], {icon: myIcon});
 			map.addOverlay(marker); 
 			
@@ -74,7 +69,6 @@
 
 			addLine(newLinePoints);//增加轨迹线
 			setZoom(bPoints);
-		//}
 		}
 
 	}    
@@ -104,17 +98,15 @@
 		}
 		
 		var point = {"lng":longitude,"lat":lantitude};
-		longitude = 999;
-		lantitude = 999;
+		
 		var makerPoints = [];
-		//var newLinePoints = [];
-		var len;
-
+		
 		makerPoints.push(point);
 		var convertor = new BMap.Convertor();			
 		convertor.translate(makerPoints, 1, 5, drawLinecallback);
 		//addMarker(makerPoints);//增加对应该的轨迹点
-
+		longitude = 999;
+		lantitude = 999;
 		setTimeout(dynamicLine, 2000);
 	}
 

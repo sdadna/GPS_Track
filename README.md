@@ -31,25 +31,21 @@
 
 演示地址：http://runningls.com/demos/baidumap/index.html?to=translate
 
-#modify desciption
+# modify desciption
 draw line by data using baidu map API
 
-##using file
+## using file
 * DrawTrack.py(trans data to track.html)
 * track.html(receive data, and display it using line)
 * track.ico
 * socket.c(compile this file to binary,, use it to trans data to drawTrack.py)
 
-#example
-1.step1
-python DrawTrack.py
-2.step2
-input [127.0.0.1:8000](http://127.0.0.1:8000) in the web
+# example
+1. step1
+> python DrawTrack.py
+2. step2
+> input [127.0.0.1:8000](http://127.0.0.1:8000) in the web
+3. step3
+> ./a.out
 
 
-1.   这是第一行列表项。
-2.   这是第二行列表项。
-> 
-> 给出一些例子代码：
- > 
- >     return shell_exec("echo $input | $markdown_script");

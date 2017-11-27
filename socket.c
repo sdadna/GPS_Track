@@ -39,10 +39,14 @@ int client(){
 	strncpy(GPS_Point.longtitude, "#3150.42774#", 13);
 	// char lantitude[] = "3150.42774 ";
 	// char longtitude[] = "11715.11010";
-
-	ret  = write(client_sock, &GPS_Point, sizeof(GPS_Point));
+	char ch[] = "loc_state:A\n\
+				Lat:3150.45775\n\
+				Lat_NS:N\n\
+				Lon:11715.13750\n\
+				Lon_EW:E\n";
+	ret  = write(client_sock, &ch, strlen(ch) + 1);
 //	ret  = write(client_sock, longtitude, strlen(longtitude) + 1);
-	printf("%d %f %f\n",ret, GPS_Point.lantitude, GPS_Point.longtitude);
+	printf("%d\n%s\n",ret,ch);
 	close(client_sock);
 }
 
