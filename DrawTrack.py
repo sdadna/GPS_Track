@@ -92,24 +92,21 @@ class localHostServer(SocketServer.BaseRequestHandler):
 	def handle(self):
 		
 		conn = self.request
-		ret_bytes = conn.recv(1024)
-		print ret_bytes
-		ret_bytes = ret_bytes.replace('\t','')
-		ret = ret_bytes.split('\n')
-		print ret
-		for string in ret:
-			print string
-			data = string.split(':')
-			if(len(data) < 2):
-				break
-			gps_data[data[0]] = data[1]
+		while (1):
+			ret_bytes = conn.recv(1024)
+			ret_bytes = ret_bytes.replace('\t','')
+			ret = ret_bytes.split('\n')
+			for string in ret:
+				data = string.split(':')
+				if(len(data) < 2):
+					break
+				gps_data[data[0]] = data[1]
 
-		print gps_data
-		#Lat		
-		Lat, Lon = self.parseGPSData(gps_data)
-		print Lat, Lon
-		BaiDuMapData['Lat'] = Lat
-		BaiDuMapData['Lon'] = Lon
+			print gps_data
+			#Lat		
+			Lat, Lon = self.parseGPSData(gps_data)
+			BaiDuMapData['Lat'] = Lat
+			BaiDuMapData['Lon'] = Lon
 		# data['jingdu'] = Lat
 		# data['weidu'] = Lon
 		#print ret[1], ret[2]
