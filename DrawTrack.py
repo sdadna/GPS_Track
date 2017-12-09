@@ -11,8 +11,12 @@ import math
 
 i = 0;
 #data = [{'jingdu':117.27,'weidu':31.86},{'jingdu':117.16,'weidu':32.47},{'jingdu':116.98,'weidu':32.62},{'jingdu':118.38,'weidu':31.33}]
+#gps_data = {'Lon_EW': 'E', 'Lon': '11715.13750', 'loc_state': 'A', 'Lat': '3150.45775', 'Lat_NS': 'N', 'id': '127.0.0.1'},{'Lon_EW': 'E', 'Lon': '11715.13750', 'loc_state': 'A', 'Lat': '3150.65775', 'Lat_NS': 'N', 'id': '127.0.0.2'}
 gps_data = {}
-BaiDuMapData = {}
+actualGpsData = {}
+BaiDuMapData = []
+#BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}, {'Lat': 32.8409625, 'Lon': 118.25279166666665, 'id': '127.0.0.2'},{'Lat': 33.8409625, 'Lon': 119.35279166666665, 'id': '127.0.0.3'}],[{'Lat': 40, 'Lon': 120, 'id': '127.0.0.1'}, {'Lat': 41, 'Lon': 121, 'id': '127.0.0.2'},{'Lat': 42, 'Lon': 122, 'id': '127.0.0.3'}]\
+#,[{'Lat': 24, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 25, 'Lon': 120, 'id': '127.0.0.2'},{'Lat': 33, 'Lon': 120, 'id': '127.0.0.3'}],[{'Lat': 25, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 24, 'Lon': 119, 'id': '127.0.0.2'},{'Lat': 23, 'Lon': 120, 'id': '127.0.0.3'}]]
 class HTTPHandler(BaseHTTPRequestHandler):
 
 	# def do_GET(self):
@@ -40,16 +44,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
 			f.close()
 		elif self.path == '/GPSdata':
 			global i
-			Error_data = {'Lat':999,'Lon':999}
+			global BaiDuMapData
+			#Error_data = {'Lat':999,'Lon':999}
 			if len(BaiDuMapData):
 				json_str = json.dumps(BaiDuMapData)
-				BaiDuMapData.clear()
+				#BaiDuMapData = []
 			else:
-				json_str = json.dumps(Error_data)
+				json_str = json.dumps('Error_data')
 			# json_str = json.dumps(data[i])
 			# i = (i + 1) % 4
-			print "json:",json_str
-
+			#print "json:",json_str
+			# i = (i + 1) % 4;
+			# print json_str
 			self.send_response(200)
 			self.send_header('Content-type', 'text/html')
 			self.end_headers()
@@ -80,7 +86,7 @@ class localHostServer(SocketServer.BaseRequestHandler):
 
 	def parseGPSData(self, data):
 		Lat = self.parseLatitude(data['Lat'])
-		Lon = self.parseLon(gps_data['Lon'])
+		Lon = self.parseLon(data['Lon'])
 
 		if data['Lon_EW'] == 'W':
 			Lon = -Lon
@@ -92,27 +98,35 @@ class localHostServer(SocketServer.BaseRequestHandler):
 	def handle(self):
 		
 		conn = self.request
-		while (1):
-			ret_bytes = conn.recv(1024)
-			ret_bytes = ret_bytes.replace('\t','')
-			ret = ret_bytes.split('\n')
-			for string in ret:
-				data = string.split(':')
-				if(len(data) < 2):
-					break
-				gps_data[data[0]] = data[1]
+		print self.client_address
+		#while True:
+		ret_bytes = conn.recv(1024)
+		print ret_bytes
+		ret_bytes = ret_bytes.replace('\t','')
+		ret = ret_bytes.split('\n')
+		gps_data.clear()
+		for string in ret:
+			data = string.split(':')
+			if (len(data) != 2):
+				break
+			gps_data[data[0]] = data[1]
 
-			print gps_data
-			#Lat		
-			Lat, Lon = self.parseGPSData(gps_data)
-			BaiDuMapData['Lat'] = Lat
-			BaiDuMapData['Lon'] = Lon
-		# data['jingdu'] = Lat
-		# data['weidu'] = Lon
-		#print ret[1], ret[2]
-		# data["jingdu"] = 110
-		# data["weidu"] = 34
+		#print gps_data, len(gps_data)
+		#Lat	
+
+		if len(gps_data) == 5:
+			if len(BaiDuMapData) <= 10:
+				#gps_data['id'] = self.client_address[0]
+				Lat, Lon = self.parseGPSData(gps_data)
+				actualGpsData['id'] = self.client_address[0]
+				actualGpsData['Lat'] = Lat
+				actualGpsData['Lon'] = Lon
+			# BaiDuMapData['Lat'] = Lat
+			# BaiDuMapData['Lon'] = Lon
 			
+				BaiDuMapData.append(actualGpsData)
+				#print BaiDuMapData
+
 
 def start_server(port):
 	http_server = HTTPServer(('127.0.0.1', int(port)), HTTPHandler)
