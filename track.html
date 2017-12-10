@@ -6,7 +6,7 @@
     <style type="text/css">
         body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
     </style>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=YWdGplhYjUGQ3GtpKNeuTM2S"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=49GGbQCNje057FGWVlchcHeNNuAZKgMh"></script>
     <title>trace gps</title>
 </head>
 
@@ -45,8 +45,8 @@
 				}
 				console.log(makerPoints);
 
-				clearTimeout(syncEvent);
-				setTimeout(dynamicLine, 100);	
+				// clearTimeout(syncEvent);
+				// setTimeout(dynamicLine, 100);	
 			}					
 		}
 					
@@ -68,7 +68,7 @@
         	bPoints.push(data.points[i]);
         	
         	//mark point with baidu api
-        	var marker = new BMap.Marker(data.points[i])
+        	var marker = new BMap.Marker(data.points[i]);
         	map.addOverlay(marker);
         	var number = "number " + devNum[i].id;
 			var label = new BMap.Label(number,{offset:new BMap.Size(20,-10)});
@@ -78,25 +78,31 @@
         }
 		console.log(data);
 		console.log(data.points.length);
-		for (var i=0; i < data.points.length; i++){
+		for (var i=0; i < data.points.length; i++)
+		{
 			//new point 
 			multiDispObjNew[i] = data.points[i];
 			
 			//draw line
 			if (multiDispObjOld[i] != null){
+
 				var startPoint = new BMap.Point(multiDispObjOld[i].lng, multiDispObjOld[i].lat);
 				var endPoint = new BMap.Point(multiDispObjNew[i].lng, multiDispObjNew[i].lat);
-				var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"red", strokeWeight:2, strokeOpacity:0.5});
+				var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
 
 				map.addOverlay(polyline); 
+				//delete old point
+				deletePoint(multiDispObjOld[i]);
+				
 			}
 			multiDispObjOld[i] = multiDispObjNew[i];
-		}
 
+		}
+		
 		while (makerPoints.length > 0){
 			makerPoints.pop();
 		}
-		syncEvent = setTimeout(loadData, 1000);
+		//syncEvent = setTimeout(loadData, 1000);
 			
 		map.setCenter(data.points[0]);
 		setZoom(bPoints);
@@ -104,16 +110,36 @@
 
 	}    
 
+    function deletePoint(locate){
+		var allOverlay = map.getOverlays();
+
+		for(var i = 0; i < allOverlay.length - 1; i++){
+				// console.log(allOverlay[i].point);
+			if (allOverlay[i].point != undefined  || allOverlay[i].point != null ){
+
+				if ((Math.abs(allOverlay[i].point.lng - locate.lng) < 0.00000001) &&
+				 (Math.abs(allOverlay[i].point.lat - locate.lat) < 0.00000001)){
+				console.log(allOverlay[i].point);
+				console.log(locate);
+				map.removeOverlay(allOverlay[i]);
+				//return false;
+			}
+
+			}
+
+		}
+    }
 	function dynamicLine(){
 
-	
+		loadData();
+
 		if (makerPoints.length > 0){
 			var convertor = new BMap.Convertor();			
 			convertor.translate(makerPoints, 1, 5, drawLinecallback);
 			// var point = {"lng":longitude,"lat":lantitude};
 		}
 
-
+		setTimeout(dynamicLine, 1000);
 	}
 
 	//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
@@ -140,6 +166,6 @@
 	map.addControl(new BMap.NavigationControl());
 	map.enableScrollWheelZoom();//滚轮放大缩小
 
-	syncEvent = setTimeout(loadData, 1000);//动态生成新的点。
-	//window.dynamicLine();
+	//syncEvent = setTimeout(loadData, 1000);//动态生成新的点。
+	window.dynamicLine();
 </script>  

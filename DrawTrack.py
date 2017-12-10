@@ -15,6 +15,7 @@ i = 0;
 gps_data = {}
 actualGpsData = {}
 BaiDuMapData = []
+#BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}],[{'Lat': 31.8409625, 'Lon': 118.35279166666665, 'id': '127.0.0.1'}]]
 #BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}, {'Lat': 32.8409625, 'Lon': 118.25279166666665, 'id': '127.0.0.2'},{'Lat': 33.8409625, 'Lon': 119.35279166666665, 'id': '127.0.0.3'}],[{'Lat': 40, 'Lon': 120, 'id': '127.0.0.1'}, {'Lat': 41, 'Lon': 121, 'id': '127.0.0.2'},{'Lat': 42, 'Lon': 122, 'id': '127.0.0.3'}]\
 #,[{'Lat': 24, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 25, 'Lon': 120, 'id': '127.0.0.2'},{'Lat': 33, 'Lon': 120, 'id': '127.0.0.3'}],[{'Lat': 25, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 24, 'Lon': 119, 'id': '127.0.0.2'},{'Lat': 23, 'Lon': 120, 'id': '127.0.0.3'}]]
 class HTTPHandler(BaseHTTPRequestHandler):
@@ -48,14 +49,14 @@ class HTTPHandler(BaseHTTPRequestHandler):
 			#Error_data = {'Lat':999,'Lon':999}
 			if len(BaiDuMapData):
 				json_str = json.dumps(BaiDuMapData)
-				#BaiDuMapData = []
+				BaiDuMapData = []
 			else:
 				json_str = json.dumps('Error_data')
 			# json_str = json.dumps(data[i])
-			# i = (i + 1) % 4
+			#i = (i + 1) % 2
 			#print "json:",json_str
 			# i = (i + 1) % 4;
-			# print json_str
+			print json_str
 			self.send_response(200)
 			self.send_header('Content-type', 'text/html')
 			self.end_headers()
@@ -125,7 +126,7 @@ class localHostServer(SocketServer.BaseRequestHandler):
 			# BaiDuMapData['Lon'] = Lon
 			
 				BaiDuMapData.append(actualGpsData)
-				#print BaiDuMapData
+				#print "dsa",BaiDuMapData
 
 
 def start_server(port):
@@ -134,7 +135,9 @@ def start_server(port):
 
 
 def start_local_server(port):
+	#local host test
 	server_sk = SocketServer.ThreadingTCPServer(("127.0.0.1", int(port)), localHostServer)
+
 	server_sk.serve_forever()
 
 try:
