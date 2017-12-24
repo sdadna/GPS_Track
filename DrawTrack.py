@@ -15,10 +15,10 @@ i = 0;
 #gps_data = {'Lon_EW': 'E', 'Lon': '11715.13750', 'loc_state': 'A', 'Lat': '3150.45775', 'Lat_NS': 'N', 'id': '127.0.0.1'},{'Lon_EW': 'E', 'Lon': '11715.13750', 'loc_state': 'A', 'Lat': '3150.65775', 'Lat_NS': 'N', 'id': '127.0.0.2'}
 gps_data = {}
 actualGpsData = {}
-#BaiDuMapData = []
+BaiDuMapData = []
 #BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}],[{'Lat': 31.8409625, 'Lon': 118.35279166666665, 'id': '127.0.0.1'}]]
-BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}, {'Lat': 32.8409625, 'Lon': 118.25279166666665, 'id': '127.0.0.2'},{'Lat': 33.8409625, 'Lon': 119.35279166666665, 'id': '127.0.0.3'}],[{'Lat': 40, 'Lon': 120, 'id': '127.0.0.1'}, {'Lat': 41, 'Lon': 121, 'id': '127.0.0.2'},{'Lat': 42, 'Lon': 122, 'id': '127.0.0.3'}]\
-,[{'Lat': 24, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 25, 'Lon': 120, 'id': '127.0.0.2'},{'Lat': 33, 'Lon': 120, 'id': '127.0.0.3'}],[{'Lat': 25, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 24, 'Lon': 119, 'id': '127.0.0.2'},{'Lat': 23, 'Lon': 120, 'id': '127.0.0.3'}]]
+#BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}, {'Lat': 32.8409625, 'Lon': 118.25279166666665, 'id': '127.0.0.2'},{'Lat': 33.8409625, 'Lon': 119.35279166666665, 'id': '127.0.0.3'}],[{'Lat': 40, 'Lon': 120, 'id': '127.0.0.1'}, {'Lat': 41, 'Lon': 121, 'id': '127.0.0.2'},{'Lat': 42, 'Lon': 122, 'id': '127.0.0.3'}]\
+#,[{'Lat': 24, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 25, 'Lon': 120, 'id': '127.0.0.2'},{'Lat': 33, 'Lon': 120, 'id': '127.0.0.3'}],[{'Lat': 25, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 24, 'Lon': 119, 'id': '127.0.0.2'},{'Lat': 23, 'Lon': 120, 'id': '127.0.0.3'}]]
 class HTTPHandler(BaseHTTPRequestHandler):
 
 	# 	self.wfile.write("hello world!")
@@ -69,15 +69,15 @@ class HTTPHandler(BaseHTTPRequestHandler):
 			#Error_data = {'Lat':999,'Lon':999}
 
 			if len(BaiDuMapData):
-				json_str = json.dumps(BaiDuMapData[i])
-				#BaiDuMapData = []
+				json_str = json.dumps(BaiDuMapData)
+				BaiDuMapData = []
 			else:
 				json_str = json.dumps('Error_data')
 			# json_str = json.dumps(data[i])
 			#i = (i + 1) % 2
 			#print "json:",json_str
-			i = (i + 1) % 4;
-			#print json_str
+			#i = (i + 1) % 4;
+			print json_str
 			self.send_response(200)
 			self.send_header('Content-type', 'text/html')
 			self.end_headers()
@@ -130,7 +130,9 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		#		Lon:11715.13750\n\
 		#		Lon_EW:E\n"
 		# Time:14d48m54s\n loc_state:A\n Lat:3149.63573\nLat_NS:N\n Lon:11707.18372       Lon_EW:E\n Speed:0.038\n Azimuth:\n Utc231217\n Alti:41.0
+		#for test
 		print ret_bytes
+		#
 		#data = "Time:14d48m54s\nloc_state:A\nLat:3149.63573\nLat_NS:N\nLon:11707.18372\nLon_EW:E\nSpeed:0.038\nAzimuth:\nUtc:231217\nAlti:41.0"
 		gpsMsg = re.search(r'Time:[\d]+d[\d]+m[\d]+s\nloc_state:[AV]\nLat:[\d.]+\nLat_NS:[NS]\nLon:[\d.]+\nLon_EW:[EW]\nSpeed:[\d.]+\nAzimuth:(.*)\nDate:[\d]+\nAlti:[\d.]+',ret_bytes)
 		if gpsMsg is None:
@@ -164,13 +166,15 @@ class localHostServer(SocketServer.BaseRequestHandler):
 
 
 def start_server(port):
-	http_server = HTTPServer(('192.168.42.198', int(port)), HTTPHandler)
+	#moudify the ip address if need
+	http_server = HTTPServer(('192.168.42.224', int(port)), HTTPHandler)
 	http_server.serve_forever()
 
 
 def start_local_server(port):
 	#local host test
-	server_sk = SocketServer.ThreadingTCPServer(("192.168.42.198", int(port)), localHostServer)
+	#moudify the ip address if need
+	server_sk = SocketServer.ThreadingTCPServer(("192.168.42.224", int(port)), localHostServer)
 
 	server_sk.serve_forever()
 
@@ -178,8 +182,9 @@ def start_local_server(port):
 #start here
 if __name__ == '__main__':
 	try:
-		thread.start_new_thread(start_server,(8080,)) #http server
-		thread.start_new_thread(start_local_server,(8000,)) #local host server
+		#port could be modify ,command 8000, 8080s
+		thread.start_new_thread(start_server,(8000,)) #http server
+		thread.start_new_thread(start_local_server,(8080,)) #local host server
 	except:
 		print "Error unable create multi theread"
 
