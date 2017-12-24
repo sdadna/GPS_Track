@@ -19,9 +19,6 @@
 	// 实时轨迹demo。
 	// 实际运用的话可能ajax实时读取后台数据，加载到地图上。
 
-	var devNum = [];
-	var syncEvent;
-
 	function loadData(){
 	var xmlhttp;
 	if(window.XMLHttpRequest){
@@ -36,21 +33,32 @@
 			var obj = JSON.parse(xmlhttp.responseText);
 
 			if (obj != 'Error_data') {
-				console.log(obj.length);
+				
 				for (var i = 0; i < obj.length; i++){
+					if (devId.length == 0){
+						devId[0] = obj[0].id;
+					}
+					var j = 0;
+					for (j = 0; j < devId.length; j++){
+						if(devId[j] == obj[i].id)
+							break;
+					}
+					if(j == devId.length){
+						devId[j] = obj[i].id;
+					}
 					devNum[i] = obj[i];
 					var point = {"lng":devNum[i].Lon,"lat":devNum[i].Lat};
 								
 					makerPoints.push(point);					
+					}
 				}
 				console.log(makerPoints);
-
+				console.log(devNum);
+				console.log(devId);
 				// clearTimeout(syncEvent);
 				// setTimeout(dynamicLine, 100);	
 			}					
 		}
-					
-	}
 	xmlhttp.open("GET","/GPSdata",false);
 	xmlhttp.send();
 	}
@@ -76,26 +84,31 @@
 
           //  map.setCenter(data.points[i]);
         }
-		console.log(data);
-		console.log(data.points.length);
 		for (var i=0; i < data.points.length; i++)
 		{
-			//new point 
-			multiDispObjNew[i] = data.points[i];
-			
-			//draw line
-			if (multiDispObjOld[i] != null){
 
-				var startPoint = new BMap.Point(multiDispObjOld[i].lng, multiDispObjOld[i].lat);
-				var endPoint = new BMap.Point(multiDispObjNew[i].lng, multiDispObjNew[i].lat);
-				var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
-
-				map.addOverlay(polyline); 
-				//delete old point
-				deletePoint(multiDispObjOld[i]);
+			for(var j=0; j < devId.length; j++){
+				if (devId[j] != devNum[i].id){
+					continue;
+				}
+				//new point 
+				multiDispObjNew[j] = data.points[i];
 				
+				//draw line
+				if (multiDispObjOld[j] != null){
+
+					var startPoint = new BMap.Point(multiDispObjOld[j].lng, multiDispObjOld[j].lat);
+					var endPoint = new BMap.Point(multiDispObjNew[j].lng, multiDispObjNew[j].lat);
+					var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+
+					map.addOverlay(polyline); 
+					//delete old point
+					deletePoint(multiDispObjOld[j]);
+					
+				}
+				multiDispObjOld[j] = multiDispObjNew[j];				
 			}
-			multiDispObjOld[i] = multiDispObjNew[i];
+
 
 		}
 		
@@ -156,6 +169,8 @@
 	
 	//数据准备,
 	var bPoints = [];
+	var devNum = [];//store receive device gps info
+	var devId = [];//store device mac address
 	var multiDispObjOld = [];
 	var multiDispObjNew = [];
 	var makerPoints = []; //marker all point each time

@@ -37,7 +37,7 @@ draw line by data using baidu map API
 ## using file
 * DrawTrack.py(trans data to track.html)
 * track.html(receive data, and display it using line)
-* track.ico
+* track.ico(not used now )
 * socket.c(compile this file to binary,, use it to trans data to drawTrack.py)
 
 # example
@@ -46,7 +46,9 @@ draw line by data using baidu map API
 2. step2
 > input [127.0.0.1:8000](http://127.0.0.1:8000) in the web
 3. step3
+> gcc socket.c 
 > ./a.out
+> 
 
 ## Attention
 - **The lantitude and longtitude just be allowed in china by using Baidu**.If you want to try other country, try it.

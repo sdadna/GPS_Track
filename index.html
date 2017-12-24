@@ -1,13 +1,262 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8" />
-	<title>百度地图Web API应用</title>
-	
+	<!-- <meta charset="UTF-8" /> -->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script src="jquery-3.2.1.js"></script>
+	<script src="http://api.map.baidu.com/api?v=2.0&ak=49GGbQCNje057FGWVlchcHeNNuAZKgMh"></script>
+	<title>gps track</title>
+	<style type="text/css">
+ 	body{margin: 0; padding: 0;}
+ 	#left {width: 120px;height: 200px;float: left;}
+ 	#right {width: 85%;height: 100%;float: right;}
+	</style>
 </head>
-<frameset cols="150,*" frameborder="no" border="0" framespacing="0" onload=";">
+<!-- <frameset cols="150,*" frameborder="no" border="0" framespacing="0" onload=";">
 <frame src="left.html" name="leftFrame" scrolling="No" noresize="noresize" id="leftFrame"  />
-<frame src="marker.html"  name="rightFrame"  border="100" id="rightFrame"   scrolling="yes"  />
+<frame src="track.html"  name="rightFrame"  border="100" id="rightFrame"   scrolling="yes"  />
 </frameset>
+ -->
+
+ <body>
+ 	<div id='left'>
+ 	<button>dianwo</button><br>
+ 	<button id="clrScreen">clear screen</button>
+ 	</div>
+ 	<div id="right"></div>
+ 	<!-- <script >
+ 	var htmlChildCount = 0;
+	$(document).ready(function(){
+		$("button").click(function(){
+		if (htmlChildCount < 1){
+			$.get('/track.html',function(responseTxt, statusTxt, xhr){
+			if(statusTxt == "success")
+				{
+					alert("wwaibuneriong");
+
+				$("#right").html(responseTxt);
+				htmlChildCount += 1;
+			}
+			if(statusTxt == "error")
+				alert("error");
+
+			});	
+
+
+		}else{
+			//clearTimeout(dynamicLine);
+			console.log("not allow load new child html");
+		}
+ 
+ 		});
+ 	});
+ 	var enableMap = true;
+ 	$(document).ready(function(){
+ 		$("#clrScreen").click(function(){
+ 			//$("#right").html("<b>clear screen</b>")
+ 			//$("#right").hide();
+ 			if (enableMap == true){
+ 				alert("press ok");
+ 				clearTimeout(dynamicLine);
+ 				enableMap = false;
+ 			}else{
+ 				alert("press fail");
+ 				setTimeout(dynamicLine, 1000);
+ 				enableMap = true;
+ 			}
+ 			
+ 			//$("#right").empty();
+ 		});
+ 	});
+
+ 	</script> -->
+ </body>
 
 </html>
+<script > 
+ 	var htmlChildCount = 0;
+ 	 		//数据准备,
+	var bPoints = [];//store points which was converted sucess by baidu api
+	var devNum = [];
+	var multiDispObjOld = [];
+	var multiDispObjNew = [];
+	var makerPoints = []; //marker all point  in map each time
+ 	var enableMap = true;
+ 	var dlclk;
+
+	//地图操作开始
+	var map = new BMap.Map("right");  //contina not ok
+	map.centerAndZoom(new BMap.Point(117.25 ,31.83), 13); //初始显示hefei。
+	map.addControl(new BMap.NavigationControl());//add map zoom controllor
+	map.enableScrollWheelZoom();//滚轮放大缩小
+
+ 	$(document).ready(function(){
+ 		$("button").click(function(){
+ 			if (htmlChildCount < 1){
+ 				dynamicLine();
+ 				
+ 			}else{
+ 				console.log("not allow load new child html");
+ 			}
+ 		});
+ 	});
+
+ 	$(document).ready(function(){
+ 		$("#clrScreen").click(function(){
+ 			//$("#right").html("<b>clear screen</b>")
+ 			//$("#right").hide();
+ 			if (enableMap == true){
+ 				alert("clear ok");
+ 				clearTimeout(dlclk);
+ 				//enableMap = false;
+ 			}
+ 			// }else{
+ 			// 	dlclk = setTimeout(dynamicLine, 1000);
+ 			// 	enableMap = true;
+ 			// }
+ 			
+ 			//$("#right").empty();
+ 		});
+ 	});
+
+	// 实时轨迹demo。
+	// 实际运用的话可能ajax实时读取后台数据，加载到地图上。
+	function loadData(){
+
+		//$(document).ready(function(){
+			$.get('/GPSdata',function(responseTxt, statusTxt, xhr){
+			if(statusTxt == "success")
+				{
+					//alert("wwaibuneriong");
+				var obj = JSON.parse(responseTxt);
+
+				if (obj != 'Error_data') {
+					console.log(obj.length);
+					//received gps data save to devNum array
+					for (var i = 0; i < obj.length; i++){
+						devNum[i] = obj[i];
+						var point = {"lng":devNum[i].Lon,"lat":devNum[i].Lat};
+						
+						//marker point buf 	will clear when mark complete		
+						makerPoints.push(point);					
+					}
+					console.log(makerPoints);	
+				}
+				//$("#right").html(responseTxt);
+				//htmlChildCount += 1;
+			}
+			if(statusTxt == "error")
+				alert("error");
+
+			});
+		//});
+	}
+
+	//
+	drawLinecallback = function (data){
+		console.log(data);
+		if(data.status === 0){
+		// 	var myIcon = new BMap.Icon("track.ico", new BMap.Size(5, 5), {
+		// 	offset: new BMap.Size(5, 5) 
+		// });
+
+        for (var i = 0; i < data.points.length; i++) {
+        	bPoints.push(data.points[i]);
+        	
+        	//mark point with baidu api
+        	var marker = new BMap.Marker(data.points[i]);
+        	map.addOverlay(marker);
+        	var number = "number " + devNum[i].id;
+			var label = new BMap.Label(number,{offset:new BMap.Size(20,-10)});
+			marker.setLabel(label);
+
+          //  map.setCenter(data.points[i]);
+        }
+		console.log(data);
+		console.log(data.points.length);
+		for (var i=0; i < data.points.length; i++)
+		{
+			//new point 
+			multiDispObjNew[i] = data.points[i];
+			
+			//draw line with old point and new point 
+			if (multiDispObjOld[i] != null){
+
+				var startPoint = new BMap.Point(multiDispObjOld[i].lng, multiDispObjOld[i].lat);
+				var endPoint = new BMap.Point(multiDispObjNew[i].lng, multiDispObjNew[i].lat);
+				var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+
+				map.addOverlay(polyline); 
+				//delete old point
+				deletePoint(multiDispObjOld[i]);
+				
+			}
+			//
+			multiDispObjOld[i] = multiDispObjNew[i];
+
+		}
+		
+		//
+		while (makerPoints.length > 0){
+			makerPoints.pop();
+		}
+			
+		map.setCenter(data.points[0]);
+		setZoom(bPoints);
+		}
+
+	}    
+
+    function deletePoint(locate){
+		var allOverlay = map.getOverlays();
+		//get all marker point in map
+		for(var i = 0; i < allOverlay.length - 1; i++){
+				// console.log(allOverlay[i].point);
+			if (allOverlay[i].point != undefined  || allOverlay[i].point != null ){
+
+				if ((Math.abs(allOverlay[i].point.lng - locate.lng) < 0.00000001) &&
+				 (Math.abs(allOverlay[i].point.lat - locate.lat) < 0.00000001)){
+				console.log(allOverlay[i].point);
+				console.log(locate);
+				map.removeOverlay(allOverlay[i]);
+				//return false;
+			}
+
+			}
+
+		}
+    }
+	function dynamicLine(){
+
+		loadData();
+
+		if (makerPoints.length > 0){
+			//received gps data convert to baidu map data
+			//will call drawLinecallback function when success
+			var convertor = new BMap.Convertor();			
+			convertor.translate(makerPoints, 1, 5, drawLinecallback);
+			// var point = {"lng":longitude,"lat":lantitude};
+		}
+
+		dlclk = setTimeout(dynamicLine, 1000);
+	}
+
+	//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
+	//更新。设置不是每次增加点都重新设置显示范围。因为有可能会想放大了看。
+	function setZoom(bPoints){
+		var view = map.getViewport(eval(bPoints));
+		if(map.oldView != JSON.stringify(view)){
+			var mapZoom = view.zoom; 
+			var centerPoint = view.center; 
+			map.centerAndZoom(centerPoint,mapZoom);
+			map.oldView = JSON.stringify(view);
+		}
+	}
+	
+
+	
+
+</script>  
+
+
