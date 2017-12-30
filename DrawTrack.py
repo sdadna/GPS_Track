@@ -134,22 +134,28 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		print ret_bytes
 		#
 		#data = "Time:14d48m54s\nloc_state:A\nLat:3149.63573\nLat_NS:N\nLon:11707.18372\nLon_EW:E\nSpeed:0.038\nAzimuth:\nUtc:231217\nAlti:41.0"
-		gpsMsg = re.search(r'Time:[\d]+d[\d]+m[\d]+s\nloc_state:[AV]\nLat:[\d.]+\nLat_NS:[NS]\nLon:[\d.]+\nLon_EW:[EW]\nSpeed:[\d.]+\nAzimuth:(.*)\nDate:[\d]+\nAlti:[\d.]+',ret_bytes)
+		#gpsMsg = re.search(r'Time:[\d]+d[\d]+m[\d]+s\nloc_state:[AV]\nLat:[\d.]+\nLat_NS:[NS]\nLon:[\d.]+\nLon_EW:[EW]\nSpeed:[\d.]+\nAzimuth:(.*)\nDate:[\d]+\nAlti:[\d.]+',ret_bytes)
+		#+QGNSSRD: $GNRMC,130225.000,A,3149.6525,N,11707.1847,E,1.96,159.44,301217,,,A*73
+
+		gpsMsg = re.search(r'\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\d]+)', ret_bytes)
 		if gpsMsg is None:
 			return
-		#	print gpsMsg.group()
-		ret_bytes = gpsMsg.group().replace(' ','')
-		ret = ret_bytes.split('\n')
+		# ret_bytes = gpsMsg.group().replace(' ','')
+		# ret = ret_bytes.split('\n')
 		gps_data.clear()
-		for string in ret:
-			data = string.split(':')
-			if (len(data) != 2):
-				break
-			gps_data[data[0]] = data[1]
+		gps_data['Lat'] = gpsMsg.group(3)
+		gps_data['Lat_NS'] = gpsMsg.group(4)
+		gps_data['Lon'] = gpsMsg.group(5)
+		gps_data['Lon_EW'] = gpsMsg.group(6)
+		# for string in ret:
+		# 	data = string.split(':')
+		# 	if (len(data) != 2):
+		# 		break
+		# 	gps_data[data[0]] = data[1]
 
 		print gps_data
 		#support 10 gps device point now
-		if len(gps_data) == 10:
+		if len(gps_data) == 4:
 			if len(BaiDuMapData) <= 10:
 				#gps_data['id'] = self.client_address[0]
 				Lat, Lon = self.parseGPSData(gps_data)
@@ -167,14 +173,14 @@ class localHostServer(SocketServer.BaseRequestHandler):
 
 def start_server(port):
 	#moudify the ip address if need
-	http_server = HTTPServer(('192.168.42.224', int(port)), HTTPHandler)
+	http_server = HTTPServer(('127.0.0.1', int(port)), HTTPHandler)
 	http_server.serve_forever()
 
 
 def start_local_server(port):
 	#local host test
 	#moudify the ip address if need
-	server_sk = SocketServer.ThreadingTCPServer(("192.168.42.224", int(port)), localHostServer)
+	server_sk = SocketServer.ThreadingTCPServer(("127.0.0.1", int(port)), localHostServer)
 
 	server_sk.serve_forever()
 
