@@ -142,22 +142,26 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		#data = "Time:14d48m54s\nloc_state:A\nLat:3149.63573\nLat_NS:N\nLon:11707.18372\nLon_EW:E\nSpeed:0.038\nAzimuth:\nUtc:231217\nAlti:41.0"
 		#gpsMsg = re.search(r'Time:[\d]+d[\d]+m[\d]+s\nloc_state:[AV]\nLat:[\d.]+\nLat_NS:[NS]\nLon:[\d.]+\nLon_EW:[EW]\nSpeed:[\d.]+\nAzimuth:(.*)\nDate:[\d]+\nAlti:[\d.]+',ret_bytes)
 		#example :+QGNSSRD: $GNRMC,130225.000,A,3149.6525,N,11707.1847,E,1.96,159.44,301217,,,A*73
-		idInfo = re.search(r'([\d]+)\n\+QGNSSRD: \$GNRMC,[\d.]+,V,,,,,[\d.]+,[\d.]+,[\d]+,,,N\*[\dABCDEF]{2}',ret_bytes)
-#		print idInfo.group(1)
-		if idInfo is not None:
-			if idInfo.group(1) not in idList:
-				idList.append(idInfo.group(1))
-		print idList
-		gpsMsg = re.search(r'([\d]+)\n\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\d]+)', ret_bytes)
+# 		idInfo = re.search(r'([\d]+)\n\+QGNSSRD: \$GNRMC,[\d.]+,V,,,,,[\d.]+,[\d.]+,[\d]+,,,N\*[\dABCDEF]{2}',ret_bytes)
+# #		print idInfo.group(1)
+# 		if idInfo is not None:
+# 			if idInfo.group(1) not in idList:
+# 				idList.append(idInfo.group(1))
+# 		print idList
+
+		ret = ret_bytes.split('\n')
+		print ret
+		gpsMsg = re.search(r'\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\dABCDEF]+)', ret[1])
 		if gpsMsg is None:
 			return
 		# ret_bytes = gpsMsg.group().replace(' ','')
 		# ret = ret_bytes.split('\n')
 		gps_data.clear()
-		gps_data['Lat'] = gpsMsg.group(4)
-		gps_data['Lat_NS'] = gpsMsg.group(5)
-		gps_data['Lon'] = gpsMsg.group(6)
-		gps_data['Lon_EW'] = gpsMsg.group(7)
+		gps_data['id'] = ret[0]
+		gps_data['Lat'] = gpsMsg.group(3)
+		gps_data['Lat_NS'] = gpsMsg.group(4)
+		gps_data['Lon'] = gpsMsg.group(5)
+		gps_data['Lon_EW'] = gpsMsg.group(6)
 		# for string in ret:
 		# 	data = string.split(':')
 		# 	if (len(data) != 2):
@@ -166,13 +170,13 @@ class localHostServer(SocketServer.BaseRequestHandler):
 
 		print gps_data
 		#support 10 gps device point now
-		if len(gps_data) == 4:
+		if len(gps_data) == 5:
 			if len(BaiDuMapData) <= 10:
 				#gps_data['id'] = self.client_address[0]
 				Lat, Lon = self.parseGPSData(gps_data)
 				print Lat, Lon
 				if (Lat <= 90 and Lat >= -90) and (Lon <= 180 and Lon >= -180):
-					actualGpsData['id'] = gpsMsg.group(1)
+					actualGpsData['id'] = gps_data['id']
 					actualGpsData['Lat'] = Lat
 					actualGpsData['Lon'] = Lon
 
