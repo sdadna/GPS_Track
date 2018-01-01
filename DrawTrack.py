@@ -16,6 +16,8 @@ i = 0;
 gps_data = {}
 actualGpsData = {}
 BaiDuMapData = []
+idList = []
+
 #BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}],[{'Lat': 31.8409625, 'Lon': 118.35279166666665, 'id': '127.0.0.1'}]]
 #BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}, {'Lat': 32.8409625, 'Lon': 118.25279166666665, 'id': '127.0.0.2'},{'Lat': 33.8409625, 'Lon': 119.35279166666665, 'id': '127.0.0.3'}],[{'Lat': 40, 'Lon': 120, 'id': '127.0.0.1'}, {'Lat': 41, 'Lon': 121, 'id': '127.0.0.2'},{'Lat': 42, 'Lon': 122, 'id': '127.0.0.3'}]\
 #,[{'Lat': 24, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 25, 'Lon': 120, 'id': '127.0.0.2'},{'Lat': 33, 'Lon': 120, 'id': '127.0.0.3'}],[{'Lat': 25, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 24, 'Lon': 119, 'id': '127.0.0.2'},{'Lat': 23, 'Lon': 120, 'id': '127.0.0.3'}]]
@@ -120,7 +122,7 @@ class localHostServer(SocketServer.BaseRequestHandler):
 	def handle(self):
 		#receive the gps data from device with into this code
 		conn = self.request
-		print self.client_address
+		
 		#receive data
 		ret_bytes = conn.recv(1024)
 		#split device  str to extract gps data
@@ -131,22 +133,31 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		#		Lon_EW:E\n"
 		# Time:14d48m54s\n loc_state:A\n Lat:3149.63573\nLat_NS:N\n Lon:11707.18372       Lon_EW:E\n Speed:0.038\n Azimuth:\n Utc231217\n Alti:41.0
 		#for test
+		#13045511096
+		#+QGNSSRD: $GNRMC,000100.559,V,,,,,0.00,0.00,010104,,,N*5F
+
+
 		print ret_bytes
 		#
 		#data = "Time:14d48m54s\nloc_state:A\nLat:3149.63573\nLat_NS:N\nLon:11707.18372\nLon_EW:E\nSpeed:0.038\nAzimuth:\nUtc:231217\nAlti:41.0"
 		#gpsMsg = re.search(r'Time:[\d]+d[\d]+m[\d]+s\nloc_state:[AV]\nLat:[\d.]+\nLat_NS:[NS]\nLon:[\d.]+\nLon_EW:[EW]\nSpeed:[\d.]+\nAzimuth:(.*)\nDate:[\d]+\nAlti:[\d.]+',ret_bytes)
-		#+QGNSSRD: $GNRMC,130225.000,A,3149.6525,N,11707.1847,E,1.96,159.44,301217,,,A*73
-
-		gpsMsg = re.search(r'\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\d]+)', ret_bytes)
+		#example :+QGNSSRD: $GNRMC,130225.000,A,3149.6525,N,11707.1847,E,1.96,159.44,301217,,,A*73
+		idInfo = re.search(r'([\d]+)\n\+QGNSSRD: \$GNRMC,[\d.]+,V,,,,,[\d.]+,[\d.]+,[\d]+,,,N\*[\dABCDEF]{2}',ret_bytes)
+#		print idInfo.group(1)
+		if idInfo is not None:
+			if idInfo.group(1) not in idList:
+				idList.append(idInfo.group(1))
+		print idList
+		gpsMsg = re.search(r'([\d]+)\n\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\d]+)', ret_bytes)
 		if gpsMsg is None:
 			return
 		# ret_bytes = gpsMsg.group().replace(' ','')
 		# ret = ret_bytes.split('\n')
 		gps_data.clear()
-		gps_data['Lat'] = gpsMsg.group(3)
-		gps_data['Lat_NS'] = gpsMsg.group(4)
-		gps_data['Lon'] = gpsMsg.group(5)
-		gps_data['Lon_EW'] = gpsMsg.group(6)
+		gps_data['Lat'] = gpsMsg.group(4)
+		gps_data['Lat_NS'] = gpsMsg.group(5)
+		gps_data['Lon'] = gpsMsg.group(6)
+		gps_data['Lon_EW'] = gpsMsg.group(7)
 		# for string in ret:
 		# 	data = string.split(':')
 		# 	if (len(data) != 2):
@@ -161,7 +172,7 @@ class localHostServer(SocketServer.BaseRequestHandler):
 				Lat, Lon = self.parseGPSData(gps_data)
 				print Lat, Lon
 				if (Lat <= 90 and Lat >= -90) and (Lon <= 180 and Lon >= -180):
-					actualGpsData['id'] = self.client_address[0]
+					actualGpsData['id'] = gpsMsg.group(1)
 					actualGpsData['Lat'] = Lat
 					actualGpsData['Lon'] = Lon
 

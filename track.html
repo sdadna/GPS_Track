@@ -93,14 +93,15 @@
 				}
 				//new point 
 				multiDispObjNew[j] = data.points[i];
-				
+				console.log(multiDispObjOld)
+				console.log(multiDispObjNew)
 				//draw line
-				if (multiDispObjOld[j] != null){
+				if (multiDispObjOld[j] != null && Math.abs(multiDispObjOld[j] - multiDispObjNew[j]) < 0.000001){
 
 					var startPoint = new BMap.Point(multiDispObjOld[j].lng, multiDispObjOld[j].lat);
 					var endPoint = new BMap.Point(multiDispObjNew[j].lng, multiDispObjNew[j].lat);
 					var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
-
+					console.log("sddddddddd");
 					map.addOverlay(polyline); 
 					//delete old point
 					deletePoint(multiDispObjOld[j]);
