@@ -16,16 +16,17 @@ i = 0;
 gps_data = {}
 actualGpsData = {}
 BaiDuMapData = []
-idList = []
+idPointSet = {}
 
 #BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}],[{'Lat': 31.8409625, 'Lon': 118.35279166666665, 'id': '127.0.0.1'}]]
 #BaiDuMapData = [[{'Lat': 31.8409625, 'Lon': 117.35279166666665, 'id': '127.0.0.1'}, {'Lat': 32.8409625, 'Lon': 118.25279166666665, 'id': '127.0.0.2'},{'Lat': 33.8409625, 'Lon': 119.35279166666665, 'id': '127.0.0.3'}],[{'Lat': 40, 'Lon': 120, 'id': '127.0.0.1'}, {'Lat': 41, 'Lon': 121, 'id': '127.0.0.2'},{'Lat': 42, 'Lon': 122, 'id': '127.0.0.3'}]\
 #,[{'Lat': 24, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 25, 'Lon': 120, 'id': '127.0.0.2'},{'Lat': 33, 'Lon': 120, 'id': '127.0.0.3'}],[{'Lat': 25, 'Lon': 118, 'id': '127.0.0.1'}, {'Lat': 24, 'Lon': 119, 'id': '127.0.0.2'},{'Lat': 23, 'Lon': 120, 'id': '127.0.0.3'}]]
 class HTTPHandler(BaseHTTPRequestHandler):
 
-	# 	self.wfile.write("hello world!")
+	#self.wfile.write("hello world!")
 	def do_GET(self):
 		print self.client_address
+		print self.path
 		#web first request ,send track.html to web
 		#web will execute track.html
 		if self.path == '/':
@@ -65,6 +66,13 @@ class HTTPHandler(BaseHTTPRequestHandler):
 			self.wfile.write(f.read())
 			f.close()
 		#
+		elif self.path == '/drawLine':
+			json_str = json.dumps(idPointSet)
+			self.send_response(200)
+			self.send_header('Content-type', 'text/html')
+			self.end_headers()
+			self.wfile.write(json_str)
+
 		elif self.path == '/GPSdata':
 			global i
 			global BaiDuMapData
@@ -125,32 +133,13 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		
 		#receive data
 		ret_bytes = conn.recv(1024)
-		#split device  str to extract gps data
-		#example str:"loc_state:A\n\
-		#		Lat:3150.45775\n\
-		#		Lat_NS:N\n\
-		#		Lon:11715.13750\n\
-		#		Lon_EW:E\n"
-		# Time:14d48m54s\n loc_state:A\n Lat:3149.63573\nLat_NS:N\n Lon:11707.18372       Lon_EW:E\n Speed:0.038\n Azimuth:\n Utc231217\n Alti:41.0
 		#for test
 		#13045511096
 		#+QGNSSRD: $GNRMC,000100.559,V,,,,,0.00,0.00,010104,,,N*5F
 
-
 		print ret_bytes
-		#
-		#data = "Time:14d48m54s\nloc_state:A\nLat:3149.63573\nLat_NS:N\nLon:11707.18372\nLon_EW:E\nSpeed:0.038\nAzimuth:\nUtc:231217\nAlti:41.0"
-		#gpsMsg = re.search(r'Time:[\d]+d[\d]+m[\d]+s\nloc_state:[AV]\nLat:[\d.]+\nLat_NS:[NS]\nLon:[\d.]+\nLon_EW:[EW]\nSpeed:[\d.]+\nAzimuth:(.*)\nDate:[\d]+\nAlti:[\d.]+',ret_bytes)
-		#example :+QGNSSRD: $GNRMC,130225.000,A,3149.6525,N,11707.1847,E,1.96,159.44,301217,,,A*73
-# 		idInfo = re.search(r'([\d]+)\n\+QGNSSRD: \$GNRMC,[\d.]+,V,,,,,[\d.]+,[\d.]+,[\d]+,,,N\*[\dABCDEF]{2}',ret_bytes)
-# #		print idInfo.group(1)
-# 		if idInfo is not None:
-# 			if idInfo.group(1) not in idList:
-# 				idList.append(idInfo.group(1))
-# 		print idList
-
 		ret = ret_bytes.split('\n')
-		print ret
+
 		gpsMsg = re.search(r'\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\dABCDEF]+)', ret[1])
 		if gpsMsg is None:
 			return
@@ -162,23 +151,36 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		gps_data['Lat_NS'] = gpsMsg.group(4)
 		gps_data['Lon'] = gpsMsg.group(5)
 		gps_data['Lon_EW'] = gpsMsg.group(6)
-		# for string in ret:
-		# 	data = string.split(':')
-		# 	if (len(data) != 2):
-		# 		break
-		# 	gps_data[data[0]] = data[1]
-
+		gps_data['speed'] = gpsMsg.group(7)
+		gps_data['status'] = gpsMsg.group(2)
+		gps_data['utc'] = gpsMsg.group(1)
+		fullDate = "20" + gpsMsg.group(9)[-2:] + "-" + gpsMsg.group(9)[2:4] + "-" + gpsMsg.group(9)[0:2]
+		gps_data['date'] = fullDate
+		gps_data['altitude'] = gpsMsg.group(8)
 		print gps_data
 		#support 10 gps device point now
-		if len(gps_data) == 5:
+		if len(gps_data) == 10:
 			if len(BaiDuMapData) <= 10:
-				#gps_data['id'] = self.client_address[0]
 				Lat, Lon = self.parseGPSData(gps_data)
 				print Lat, Lon
 				if (Lat <= 90 and Lat >= -90) and (Lon <= 180 and Lon >= -180):
 					actualGpsData['id'] = gps_data['id']
 					actualGpsData['Lat'] = Lat
 					actualGpsData['Lon'] = Lon
+					actualGpsData['date'] = gps_data['date']
+					actualGpsData['altitude'] = gps_data['date']
+					actualGpsData['speed'] = gps_data['speed']
+					if idPointSet.has_key(actualGpsData['id']):	
+
+						idPointSet[actualGpsData['id']]['points'].append(actualGpsData['Lat'])
+						idPointSet[actualGpsData['id']]['points'].append(actualGpsData['Lon'])
+					else:
+						idPointSet[actualGpsData['id']] = {}
+						idPointSet[actualGpsData['id']]['id'] = actualGpsData['id']
+						idPointSet[actualGpsData['id']]['points'] = []
+						idPointSet[actualGpsData['id']]['points'].append(actualGpsData['Lat'])
+						idPointSet[actualGpsData['id']]['points'].append(actualGpsData['Lon'])						
+					
 
 					BaiDuMapData.append(actualGpsData)
 				#example data parsed
@@ -188,14 +190,14 @@ class localHostServer(SocketServer.BaseRequestHandler):
 
 def start_server(port):
 	#moudify the ip address if need
-	http_server = HTTPServer(('127.0.0.1', int(port)), HTTPHandler)
+	http_server = HTTPServer(('192.168.1.5', int(port)), HTTPHandler)
 	http_server.serve_forever()
 
 
 def start_local_server(port):
 	#local host test
 	#moudify the ip address if need
-	server_sk = SocketServer.ThreadingTCPServer(("127.0.0.1", int(port)), localHostServer)
+	server_sk = SocketServer.ThreadingTCPServer(("192.168.1.5", int(port)), localHostServer)
 
 	server_sk.serve_forever()
 
