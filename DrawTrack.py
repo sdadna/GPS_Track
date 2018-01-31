@@ -71,6 +71,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header('Content-type', 'text/html')
 			self.end_headers()
+			print json_str
 			self.wfile.write(json_str)
 
 		elif self.path == '/GPSdata':
@@ -138,7 +139,7 @@ class localHostServer(SocketServer.BaseRequestHandler):
 		#+QGNSSRD: $GNRMC,000100.559,V,,,,,0.00,0.00,010104,,,N*5F
 
 		print ret_bytes
-		ret = ret_bytes.split('\n')
+		ret = ret_bytes.split('\r\n')
 
 		gpsMsg = re.search(r'\+QGNSSRD: \$GNRMC,([\d.]+),([AV]),([\d.]+),([NS]),([\d.]+),([EW]),([\d.]+),([\d.]+),([\d]+),(.*),(.*),([ADEN]\*[\dABCDEF]+)', ret[1])
 		if gpsMsg is None:

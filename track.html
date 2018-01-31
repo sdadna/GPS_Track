@@ -44,106 +44,79 @@
         <!-- /react-text -->
         <div class="monitorTabIcon"></div>
        </div>
-       <div class="trackTab">
-        <!-- react-text: 38 -->轨迹查询
-        <!-- /react-text -->
+   <!--     <div class="trackTab">
+        轨迹查询
+        
         <div class="trackTabIcon"></div>
-       </div>
+       </div> -->
        <div class="pointerTabLeft"></div>
       </div>
       <div class="monitor visible">
        <div class="monitorSearch">
-        <input class="searchInputMonitor" placeholder="请输入关键字" />
-        <img src="/trace/admin/static/images/searchicon_2x_ab6e941.png" class="searchBtnMonitor" />
+        <input class="searchInputMonitor" placeholder="请输入手机号" />
+        <img src="http://lbsyun.baidu.com/trace/admin/static/images/searchicon_2x_ab6e941.png" class="searchBtnMonitor" />
         <div class="lineMonitor"></div>
-        <img src="/trace/admin/static/images/clearsearch_2x_e373e6e.png" class="clearSearchBtnMonitor hideCommon" />
+        <img src="http://lbsyun.baidu.com/trace/admin/static/images/clearsearch_2x_e373e6e.png" class="clearSearchBtnMonitor hideCommon" />
        </div>
        <div class="monitorList">
-        <div class="monitorAll" style="color: rgb(10, 140, 255);">
-         <!-- react-text: 49 -->全部(
-         <!-- /react-text -->
-         <!-- react-text: 50 -->0
-         <!-- /react-text -->
-         <!-- react-text: 51 -->)
-         <!-- /react-text -->
-        </div>
-        <div class="monitorOnline">
-         <!-- react-text: 53 -->在线(
-         <!-- /react-text -->
-         <!-- react-text: 54 -->0
-         <!-- /react-text -->
-         <!-- react-text: 55 -->)
-         <!-- /react-text -->
-        </div>
-        <div class="monitorOffline">
-         <!-- react-text: 57 -->离线(
-         <!-- /react-text -->
-         <!-- react-text: 58 -->0
-         <!-- /react-text -->
-         <!-- react-text: 59 -->)
-         <!-- /react-text -->
-        </div>
+        <div class="monitorAll" style="color: rgb(10, 140, 255);"></div>
+<!--         <div class="monitorOnline">
+        </div> -->
+<!--         <div class="monitorOffline">
+        </div> -->
         <div class="monitorBottomLineLeft"></div>
        </div>
        <div class="monitorAllContent visible">
-        <div class="monitorFrame"></div>
-        <div class="monitorPage">
+        <div class="monitorFrame">
+ 		
+   		</div>
+      <!--      <div class="monitorPage">
          <div class="jumpPage">
           <input class="inputPage" type="text" />
           <span class="pageNumber">
-           <!-- react-text: 67 -->/
-           <!-- /react-text -->
-           <!-- react-text: 68 --> 0
-           <!-- /react-text -->
-           <!-- react-text: 69 -->页
-           <!-- /react-text --></span>
+          /0页</span>
           <span class="goPage">GO</span>
          </div>
          <div class="switchPage">
           <span class="lastPageOff"></span>
           <span class="nextPageOff"></span>
          </div>
-        </div>
+        </div> -->
+  </div>
        </div>
        <div class="monitorOnlineContent hidden">
         <div class="monitorFrame"></div>
-        <div class="monitorPage">
+        <!-- switch page -->
+<!--         <div class="monitorPage">
          <div class="jumpPage">
           <input class="inputPage" type="text" />
           <span class="pageNumber">
-           <!-- react-text: 80 -->/
-           <!-- /react-text -->
-           <!-- react-text: 81 --> 0
-           <!-- /react-text -->
-           <!-- react-text: 82 -->页
-           <!-- /react-text --></span>
+           / 0
+           页</span>
           <span class="goPage">GO</span>
          </div>
          <div class="switchPage">
           <span class="lastPageOff"></span>
           <span class="nextPageOff"></span>
          </div>
-        </div>
+        </div> -->
        </div>
        <div class="monitorOfflineContent hidden">
         <div class="monitorFrame"></div>
-        <div class="monitorPage">
+        <!-- switch page -->
+<!--         <div class="monitorPage">
          <div class="jumpPage">
           <input class="inputPage" type="text" />
           <span class="pageNumber">
-           <!-- react-text: 93 -->/
-           <!-- /react-text -->
-           <!-- react-text: 94 --> 0
-           <!-- /react-text -->
-           <!-- react-text: 95 -->页
-           <!-- /react-text --></span>
+           / 0页
+          </span>
           <span class="goPage">GO</span>
          </div>
          <div class="switchPage">
           <span class="lastPageOff"></span>
           <span class="nextPageOff"></span>
          </div>
-        </div>
+        </div> -->
        </div>
       </div>
       <div class="track hidden">
@@ -201,24 +174,20 @@
           <div class="monitorListItemName"></div>
           <div class="monitorListItemSpeed"></div>
          </div>
-        </div>
-        <div class="monitorPage">
+        </div>]
+        <!-- switch page -->
+<!--         <div class="monitorPage">
          <div class="jumpPage">
           <input class="inputPage" type="text" />
           <span class="pageNumber">
-           <!-- react-text: 117 -->/
-           <!-- /react-text -->
-           <!-- react-text: 118 --> 0
-           <!-- /react-text -->
-           <!-- react-text: 119 -->页
-           <!-- /react-text --></span>
+           / 0页</span>
           <span class="goPage">GO</span>
          </div>
          <div class="switchPage">
           <span class="lastPageOff"></span>
           <span class="nextPageOff"></span>
          </div>
-        </div>
+        </div> -->
        </div>
       </div>
      </div>
@@ -235,18 +204,101 @@
 <script type="text/javascript"  charset="UTF-8" src="http://lbsyun.baidu.com/trace/admin/static/bootstrap/js/bootstrap-datetimepicker.zh-CN_1c1e718.js"></script>
 <!-- <script src="https://cdn.bootcss.com/echarts/3.6.2/echarts.min.js"></script>   
  -->
+
+<!-- react  -->
+ <script src="https://cdn.bootcss.com/react/15.4.2/react.min.js"></script>
+<script src="https://cdn.bootcss.com/react/15.4.2/react-dom.min.js"></script>
+<script src="https://cdn.bootcss.com/babel-standalone/6.22.1/babel.min.js"></script>
+
 </body>  
 </html>
 
 <script > 
-
 	// 实时轨迹demo。
 	// 实际运用的话可能ajax实时读取后台数据，加载到地图上。
 
+	function devClick(info){
+		console.log(info);
+		var js=$(info).html();
+		var deviceID = js.split('title="')[1].split('"')[0];
+		var i = 0;
+
+		//find the item which clicked
+		for(i=0; i < devId.length; i++){
+			if(deviceID == devId[i]){
+				console.log(i);
+				break;
+			}
+		}
+
+		if(i < devId.length){
+			//mark the item
+			//var newBPoint =new BMap.Point(117.02, 32.05);
+			var marker = new BMap.Marker(multiDispObjNew[i]);
+			addMarker(date[i],devId[i],marker);
+
+			map.centerAndZoom(multiDispObjNew[i], 15);
+
+	  //   	var number = "number " + devId[i];
+			// var label = new BMap.Label(number,{offset:new BMap.Size(20,-10)});
+			// //var p = marker.getPosition();
+			// marker.setLabel(label);
+			// //marker.disableMassClear();	
+			// map.addOverlay(marker);
+		}
+		console.log(i);
+		console.log(date[i]);
+		console.log(devId[i]);
+
+	}
 	//show all device info
 	function devList(){
-		$(".monitorFrame").text("sadfe");
+
+		var searchDev = arguments[0] ? arguments[0]:false;
+		var searchDevID = arguments[1] ? arguments[1]:0;
+
+		//search device false then show all device
+		if (searchDev == false){
+			var devFrame="";
+			for(var i=0; i < devId.length; i++){
+				devFrame += "<div onclick='devClick(this)' class='monitorListItem2' data-entity_name='" + devId[i] + "' data-entity_desc='无' data-entity_status='2' data-entity_id='"+ devId[i] +"'>"
+				devFrame += "<div class='monitorListItemName'><abbr title='" + devId[i] + "'>" + devId[i] + " </abbr></div>";
+				//device status
+				// devFrame += "<div class='monitorListItemSpeed'>Offline</div></div>";
+				
+			}
+			$(".monitorFrame").html(devFrame);
+			var deviceNum = "All (" + devId.length + ")";
+			$(".monitorList").children('div.monitorAll').text(deviceNum);
+		}else{
+			//search true then show the device searched
+			var devFrame="";
+
+			for(var i=0; i < devId.length; i++){
+				if(devId[i] == searchDevID){
+					devFrame += "<div onclick='devClick(this)' class='monitorListItem2' data-entity_name='" + devId[i] + "' data-entity_desc='无' data-entity_status='2' data-entity_id='"+ devId[i] +"'>"
+					devFrame += "<div class='monitorListItemName'><abbr title='" + devId[i] + "'>" + devId[i] + " </abbr></div>";
+					break;
+				}
+			}
+			//show device name		
+			$(".monitorFrame").html(devFrame);
+			//show device number searched
+			if(devFrame.length > 0){
+				var deviceNum = "All (" + "1" + ")";			
+			}
+			else{
+				var deviceNum = "All (" + "0" + ")";
+			}
+			$(".monitorList").children('div.monitorAll').text(deviceNum);
+
+		}
+		
+			// $(".monitorList").children('div.monitorOnline').text("Online(0)");
+			// $(".monitorList").children('div.monitorOffline').text("Offline(0)");
+
 	}
+
 	function loadData(){
 		$.get('GPSdata', function(data, status){
 
@@ -254,10 +306,11 @@
 				var obj = JSON.parse(data);
 
 				if (obj != 'Error_data') {
-					
+					//store all device number to devId and store temp device info to devNum
 					for (var i = 0; i < obj.length; i++){
 						if (devId.length == 0){
 							devId[0] = obj[0].id;
+							date[0] = obj[0].date;							
 						}
 						var j = 0;
 						for (j = 0; j < devId.length; j++){
@@ -266,8 +319,10 @@
 						}
 						if(j == devId.length){
 							devId[j] = obj[i].id;
+							//date[j] = obj[i].date;
 						}
 						devNum[i] = obj[i];
+						date[j] = obj[i].date;
 						var point = {"lng":devNum[i].Lon,"lat":devNum[i].Lat};
 									
 						makerPoints.push(point);					
@@ -279,6 +334,7 @@
 			}
 		});
 	}
+	//show window info 
 	function openInfo(content,e){
 		var p = e.target;
 		var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
@@ -292,6 +348,8 @@
 		var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
 		map.openInfoWindow(infoWindow,point); //开启信息窗口
 	}
+
+	//draw line
 	drawAllLinecallback = function(GPSPoints){
 		console.log(GPSPoints);
 		if(GPSPoints.status === 0){
@@ -320,15 +378,15 @@
 		var devPoint = data[devId[i]].points;
 		console.log(dev);
 		console.log(devPoint);
-		//more than 100 point
-		if (devPoint.length > 200){
-			var numCir = devPoint.length / 200;
-			var remainPoint = devPoint.length % 200;
+		//more than 10 point
+		if (devPoint.length > 20){
+			var numCir = devPoint.length / 20;
+			var remainPoint = devPoint.length % 20;
 			var convertor = new BMap.Convertor();
 			for (var i=1; i < (numCir + 1); i++){
 				var devPoints = [];
 
-				for (var j = 0; j < i * 100; j++){
+				for (var j = 0; j < i * 10; j++){
 					var point = {"lng":devPoint[2*j+1],"lat":devPoint[2*j]};
 					devPoints.push(point);
 				}
@@ -338,13 +396,13 @@
 			//could not fill 100 point set do follow steps
 			var devPoints = [];
 			for(var i = 0; i < (remainPoint / 2); i++){
-				var point = {"lng":devPoint[numCir * 100 + 2*i+1],"lat":devPoint[numCir * 100 + 2*i]};
+				var point = {"lng":devPoint[numCir * 10 + 2*i+1],"lat":devPoint[numCir * 10 + 2*i]};
 				devPoints.push(point);
 			}
 			convertor.translate(devPoints, 1, 5, drawAllLinecallback);
 
 		}else{
-			//less than 100 point
+			//less than 10 point
 			var devPoints = [];
 			var convertor = new BMap.Convertor();
 			for (var i = 0; i < (devPoint.length / 2); i++){
@@ -373,7 +431,7 @@
 
 		marker.addEventListener("click", function(e){
 			var pt = e.point;
-			console.log(e);
+			console.log(pt);
 			myGeo.getLocation(pt, function(result){
 				var addComp = result.addressComponents;
 				var content = "ID:" + devId + "<br>";
@@ -396,19 +454,6 @@
 				
 			});			
 		});
-		// var value = myGeo.getLocation(new BMap.Point(p.lng, p.lat), function(result){
-		// 	if (result){
-		// 		var location = result.address;	
-		// 		var content = "ID:" + devId + "<br>";
-		// 		content += "location:" + location + "<br>";
-		// 		content += "position:" + p.lng + "," + p.lat + "<br>";
-		// 		content += "date:" + date + "<br>";
-		// 		marker.addEventListener('click', function(e){
-		// 			openInfo(content, e);
-
-		// 		});		
-		// 	}
-		// });
 
 	}
 
@@ -458,7 +503,7 @@
    //      }
 		for (var i=0; i < data.points.length; i++)
 		{
-
+			// update all device marker
 			for(var j=0; j < devId.length; j++){
 				if (devId[j] != devNum[i].id){
 					continue;
@@ -486,12 +531,14 @@
 					//delete old point
 					deletePoint(multiDispObjOld[j]);					
 				}
-				multiDispObjOld[j] = multiDispObjNew[j];				
+				multiDispObjOld[j] = multiDispObjNew[j];	
+							
 			}
 
 
 		}
-		
+
+		devList();
 		while (makerPoints.length > 0){
 			makerPoints.pop();
 		}
@@ -532,6 +579,7 @@
 	var bPoints = [];
 	var devNum = [];//store receive device gps info
 	var devId = [];//store device mac address
+	var date = [];//store device time info
 	var multiDispObjOld = [];
 	var multiDispObjNew = [];
 	var makerPoints = []; //marker all point each time
@@ -545,6 +593,7 @@
 	map.addControl(new BMap.ScaleControl(opts1));
 	map.enableScrollWheelZoom();//滚轮放大缩小
 
+	//delete all marker on map 
 	map.addEventListener('rightclick',function(result){
 		var overlays = map.getOverlays();
 		//console.log(overlays);
@@ -554,10 +603,10 @@
 	$(document).ready(function(){
 	 		//syncEvent = setTimeout(loadData, 1000);//动态生成新的点。
 		window.dynamicLine();
-		devList();
-
+		
 	 });
 
+	//
 	$(".toggleOutManage").click(function(t) {
 	  	var n = e(this),
 	    r, i = n.attr("data-target") || t.preventDefault() || (r = n.attr("href")) && r.replace(/.*(?=#[^\s]+$)/, ""),
@@ -565,5 +614,33 @@
 	  n[e(i).hasClass("in") ? "addClass" : "removeClass"]("collapsed"), e(i).collapse(s)
 	});
 
+	$(".searchBtnMonitor").click(function(t){
+		var deviceID = $("input[class='searchInputMonitor']").val();
+		console.log(deviceID);
+		devList(true, deviceID);
+	});
+	$(".clearSearchBtnMonitor").click(function(t){
+		
+		console.log(t);
+		//hide clearSearchBtnMonitor
+		var clearClassName=document.getElementsByClassName("clearSearchBtnMonitor");
+		//$(".clearSearchBtnMonitor").show();
+		console.log(clearClassName);
+		clearClassName[0].className = "clearSearchBtnMonitor hideCommon";
+		var inputClassName=document.getElementsByClassName("searchInputMonitor");
+		//$(".clearSearchBtnMonitor").show();
+		console.log(inputClassName);
+		inputClassName[0].value = "";
+
+		devList();
+	});
+	$("input[class='searchInputMonitor']").change(function(){
+		//$('#result').html($(this).val().length + ' characters'); 
+		var clearClassName=document.getElementsByClassName("clearSearchBtnMonitor");
+		//$(".clearSearchBtnMonitor").show();
+		console.log(clearClassName);
+
+		clearClassName[0].className = "clearSearchBtnMonitor";
+	});
 
 </script>  
