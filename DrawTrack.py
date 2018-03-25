@@ -191,14 +191,14 @@ class localHostServer(SocketServer.BaseRequestHandler):
 
 def start_server(port):
 	#moudify the ip address if need
-	http_server = HTTPServer(('192.168.1.5', int(port)), HTTPHandler)
+	http_server = HTTPServer(('192.168.1.10', int(port)), HTTPHandler)
 	http_server.serve_forever()
 
 
 def start_local_server(port):
 	#local host test
 	#moudify the ip address if need
-	server_sk = SocketServer.ThreadingTCPServer(("192.168.1.5", int(port)), localHostServer)
+	server_sk = SocketServer.ThreadingTCPServer(("192.168.1.10", int(port)), localHostServer)
 
 	server_sk.serve_forever()
 

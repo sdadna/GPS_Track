@@ -237,7 +237,7 @@
 			var marker = new BMap.Marker(multiDispObjNew[i]);
 			addMarker(date[i],devId[i],marker);
 
-			map.centerAndZoom(multiDispObjNew[i], 15);
+			map.centerAndZoom(multiDispObjNew[i], 19);
 
 	  //   	var number = "number " + devId[i];
 			// var label = new BMap.Label(number,{offset:new BMap.Size(20,-10)});
@@ -262,7 +262,7 @@
 			var devFrame="";
 			for(var i=0; i < devId.length; i++){
 				devFrame += "<div onclick='devClick(this)' class='monitorListItem2' data-entity_name='" + devId[i] + "' data-entity_desc='无' data-entity_status='2' data-entity_id='"+ devId[i] +"'>"
-				devFrame += "<div class='monitorListItemName'><abbr title='" + devId[i] + "'>" + devId[i] + " </abbr></div>";
+				devFrame += "<div class='monitorListItemName'><abbr title='" + devId[i] + "'>" + devId[i] + " </abbr></div></div>";
 				//device status
 				// devFrame += "<div class='monitorListItemSpeed'>Offline</div></div>";
 				
@@ -363,12 +363,26 @@
 		}
 	
 	}
-	function drawLine(data){
+	//connect each line
+	connectLine = function(GPSPoints){
+		if(GPSPoints.status === 0){
+			for(var i=1; i<GPSPoints.points.length; i++){
+				var startPoint = new BMap.Point(GPSPoints.points[i-1].lng, GPSPoints.points[i-1].lat);
+				var endPoint = new BMap.Point(GPSPoints.points[i].lng, GPSPoints.points[i].lat);
+				var polyline = new BMap.Polyline([startPoint, endPoint], {strokeColor:"blue", strokeWeight:5, strokeOpacity:0.5});					
+
+				map.addOverlay(polyline); 					
+			}
+		}
+	}
+
+	function drawLine(data, tmpDev){
 		console.log(data);
+		console.log(tmpDev);
 		var i = 0;
 		for(i=0; i<devId.length; i++){
 			console.log(devId[i]);
-			if(data[devId[i]] != null)
+			if(data[devId[i]].id == tmpDev)
 				break;
 		}
 		if (i == devId.length){
@@ -379,27 +393,41 @@
 		console.log(dev);
 		console.log(devPoint);
 		//more than 10 point
+		console.log(devPoint.length);
 		if (devPoint.length > 20){
-			var numCir = devPoint.length / 20;
+			var numCir = Math.floor(devPoint.length / 20);
 			var remainPoint = devPoint.length % 20;
 			var convertor = new BMap.Convertor();
+							console.log(numCir);
+				console.log(remainPoint);
 			for (var i=1; i < (numCir + 1); i++){
 				var devPoints = [];
+				var connectLinePoint = [];
 
-				for (var j = 0; j < i * 10; j++){
+				for (var j = (i-1)*10; j < i * 10; j++){
 					var point = {"lng":devPoint[2*j+1],"lat":devPoint[2*j]};
 					devPoints.push(point);
+					if(j == i * 10 - 1){
+						connectLinePoint.push(point);
+						connectLinePoint.push({"lng":devPoint[2*(j+1)+1],"lat":devPoint[2*(j+1)]});
+					}
 				}
-				
+				//draw 10 point to one line
+				convertor.translate(devPoints, 1, 5, drawAllLinecallback);
+				//draw connect line
+				convertor.translate(connectLinePoint, 1, 5, drawAllLinecallback);
+			}
+			//could not fill 10 point set do follow steps
+			if (remainPoint > 0){
+				var devPoints = [];
+				for(var i = 0; i < (remainPoint / 2); i++){
+					var point = {"lng":devPoint[numCir * 20 + 2*i+1],"lat":devPoint[numCir * 20 + 2*i]};
+					devPoints.push(point);
+				}
+				console.log(devPoints);
 				convertor.translate(devPoints, 1, 5, drawAllLinecallback);
 			}
-			//could not fill 100 point set do follow steps
-			var devPoints = [];
-			for(var i = 0; i < (remainPoint / 2); i++){
-				var point = {"lng":devPoint[numCir * 10 + 2*i+1],"lat":devPoint[numCir * 10 + 2*i]};
-				devPoints.push(point);
-			}
-			convertor.translate(devPoints, 1, 5, drawAllLinecallback);
+
 
 		}else{
 			//less than 10 point
@@ -444,11 +472,11 @@
 
 		});
 		marker.addEventListener("rightclick", function(result){
-
+			console.log(result);
 			$.get("drawLine", function(data, status){
 				if (status == "success"){
 					var obj = JSON.parse(data);
-					drawLine(obj);
+					drawLine(obj, devId);
 
 				}
 				
