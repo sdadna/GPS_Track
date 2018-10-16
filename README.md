@@ -44,7 +44,7 @@ draw line by data using baidu map API
 1. step1
 > python DrawTrack.py
 2. step2
-> input [127.0.0.1:8000](http://127.0.0.1:8000) in the web
+> input [127.0.0.1:8000/track.html](http://127.0.0.1:8000/track.html) in the web
 3. step3
 > gcc socket.c 
 > ./a.out
